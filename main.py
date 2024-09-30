@@ -13,3 +13,7 @@ while heigth > 0:
     print(line)
     line = ""
     heigth -= 1
+
+
+
+print("wdw")
