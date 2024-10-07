@@ -26,22 +26,22 @@ def print_map(map_list, line_length):
 
 # deze functie zorgt voor het verwerken van de movement input
 def movement(direction, player_position, line_length):
-    if direction == "north" or direction == "n":
+    if direction == "up" or direction == "u":
         player_position -= line_length
         if player_position < 0:
             player_position += line_length
             return "out of bounds"
-    elif direction == "east" or direction == "e":
+    elif direction == "right" or direction == "r":
         player_position += 1
         if player_position % line_length == 0:
             player_position -= 1
             return "out of bounds"
-    elif direction == "south" or direction == "s":
+    elif direction == "down" or direction == "d":
         player_position += line_length
         if player_position > line_length ** 2:
             player_position -= line_length
             return "out of bounds"
-    elif direction == "west" or direction == "w":
+    elif direction == "left" or direction == "l":
         player_position -= 1
         if player_position % line_length == line_length - 1:
             player_position += 1
@@ -50,39 +50,19 @@ def movement(direction, player_position, line_length):
         return "invalid input"
     return player_position
 
-# deze functie print de ending die je hebt behaald
-def print_ending(ending_number):
-    if ending_number == 0:
-        print("Heb je wel wat gedaan?")
-    if ending_number == 1:
-        print("Je bent arm")
-    if ending_number == 2:
-        print("Je bent rijk")
-    if ending_number == 3:
-        print("Je hebt niks uit je huis gehaald")
 
-# deze functie bepaalt welke ending je hebt
-def ending_check(player_inventory, house_inventory):
-    if player_inventory == []:
-        ending_number = 1
-    if house_inventory == []:
-        ending_number = 2
-    if player_inventory == ["fish", "sword"] and house_inventory == ["meat", "brick"]:
-        ending_number = 3
-    return ending_number
-
-
-
-print("""x = Player
+text = [
+# 0
+"""x = Player
 k = King
 h = House
 n = NPC
 o = Empty land
       
       
-You start with nothing in your inventory, however there are some starter items in your house.""")
-
-print("""In the kingdom of Pythoria, an era of peace has been shattered by a wave of treachery.
+You start with nothing in your inventory, however there are some starter items in your house.""",
+# 1
+"""In the kingdom of Pythoria, an era of peace has been shattered by a wave of treachery.
 A band of ruthless knights, once loyal to the crown, has turned against their king.
 Alongside them are fierce dragons that have been awakened from their ancient slumber.
 Together, they have stolen the kingdom's wealth, plunging the realm into chaos and despair. 
@@ -93,63 +73,9 @@ With courage in your heart, you set out on a perilous journey to reclaim the ric
 But beware—both knights and dragons stand in your way, each more dangerous than the last. 
 Only the clever, the bold, and the persistent can hope to succeed.
       
-(You should visit the king first.)""")
-
-# dit zijn alle variabelen die in de code worden gebruikt
-line_length = 9
-move_limit = 100
-king_position = line_length // 2
-player_position = king_position + line_length
-house_position = (line_length ** 2) - (line_length // 2) - 1
-npc_positions = {8 : "Knight",
-                  19 : "Dragon"}
-map = set_map(player_position, npc_positions)
-print_map(map, line_length)
-can_move = True
-player_inventory = ["fish"]
-house_inventory = ["meat", "brick", "sword"]
-empty_inventory = False
-empty_house = False
-ending_number = 0
-player_gold = 0
-player_health = 10
-start_over = False
-game_loop = True
-
-while game_loop:
-    while not start_over:
-        # dit is de grote game loop hierbinnen speelt heel het spel zich af (dit wordt nog niet echt gebruikt naast dat het een loop is)
-        while can_move:
-            # dit is de basis keuze: bewegen
-            direction = input("Where do you want to go? (North, East, South, West)").lower()
-            movement_input = movement(direction, player_position, line_length)
-            if movement_input == "out of bounds":
-                print("Cant go that way!")
-            elif movement_input == "invalid input":
-                print("Invalid input, try again. (North, East, South, West)")
-            else:
-                player_position = movement_input
-            # hier wordt de map met de nieuwe player position geprint
-            print_map(set_map(player_position, npc_positions), line_length)
-            # dit is een check of er een npc op dezelfde tile is als de player
-            if player_position in npc_positions:
-                npc = npc_positions[player_position]
-                print(f"A {npc} has appeared!")
-                npc_decision = input("What would you like to do? (Fight, Talk, Run)").lower()
-                in_interaction = True
-                while in_interaction:
-                    if npc == "Dragon":
-                        if npc_decision == "fight":
-                            in_interaction = False
-                            have_sword = False
-                            have_brick = False
-                            for item in player_inventory:
-                                if item == "sword":
-                                    have_sword = True
-                                elif item == "brick":
-                                    have_brick = True
-                            if have_sword:
-                                print("""With a sword gleaming in your hand and unshakable resolve, you charge at the dragon.
+(You should visit the king first.)""",
+# 2
+"""With a sword gleaming in your hand and unshakable resolve, you charge at the dragon.
 
 Its eyes narrow as it spots you, but you’re already too close.
 You know this is it.
@@ -173,12 +99,9 @@ You press forward, unwilling to give it a chance to recover. With a final, power
 What did you expect? You came here to win.
 
 The dragon lies defeated at your feet, its massive body still and lifeless.
-You’ve done it. Against all odds, you’ve won.""")
-                                print("You've earned 10 gold!")
-                                player_gold += 10
-                                del npc_positions[19]
-                            elif have_brick:
-                                print("""Armed with nothing but a brick and reckless courage, you rush toward the dragon.
+You’ve done it. Against all odds, you’ve won.""",
+# 3
+"""Armed with nothing but a brick and reckless courage, you rush toward the dragon.
 
 The dragon’s massive eyes lock onto you, but you’re already too close.
 You know this is going to work.
@@ -199,7 +122,156 @@ Its jaws begin to open, sparks dancing between its teeth.
 For a fleeting moment, you realize how foolish this all was.
 There was never a chance.
 
-Before you can react, fire consumes you.""")
+Before you can react, fire consumes you.""",
+# 4
+"""Armed with nothing but a brick and reckless courage, you rush toward the dragon.
+
+The dragon’s massive eyes lock onto you, but you’re already too close.
+You know this is going to work.
+You know you’re going to hit it.
+
+With every step, your grip tightens around the brick, the weight of it somehow comforting in your hand.
+This is your moment. You raise the brick high, ready to bring it down with everything you’ve got.
+And then—you strike.
+
+The brick meets the dragon’s scales.
+...
+It’s like smashing a pebble against a mountain.
+
+What did you expect? It’s a dragon.
+
+The dragon’s gaze shifts to you, slow and deliberate.
+Its jaws begin to open, sparks dancing between its teeth.
+For a fleeting moment, you realize how foolish this all was.
+There was never a chance.
+
+Before you can react, fire consumes you.""",
+# 5
+"""Armed with nothing but a brick and reckless courage, you rush toward the dragon.
+
+The dragon’s massive eyes lock onto you, but you’re already too close.
+You know this is going to work.
+You know you’re going to hit it.
+
+With every step, your grip tightens around the brick, the weight of it somehow comforting in your hand.
+This is your moment. You raise the brick high, ready to bring it down with everything you’ve got.
+And then—you strike.
+
+The brick meets the dragon’s scales.
+...
+It’s like smashing a pebble against a mountain.
+
+What did you expect? It’s a dragon.
+
+The dragon’s gaze shifts to you, slow and deliberate.
+Its jaws begin to open, sparks dancing between its teeth.
+For a fleeting moment, you realize how foolish this all was.
+There was never a chance.
+
+Before you can react, fire consumes you.""",
+# 6
+"""Brave adventurer, our kingdom is in peril.
+Our coffers have been emptied, our people live in fear.
+The knights who once protected these lands have betrayed us, and the dragons who once slumbered have awoken.
+The gold they’ve taken must be returned. As much as you can carry, as much as you can find—bring it back to me.
+For every coin you return, a greater reward awaits.
+Go now, and may fortune guide your path.""",
+# 7
+"""The King gazes at you in astonishment, his eyes wide with disbelief.
+'You have slain a dragon?' he exclaims, his voice filled with admiration.
+'Your bravery is beyond measure — our kingdom owes you a debt that can never be repaid.""",
+# 8
+"""With a slab of fresh meat in your hands and a heart pounding with uncertainty, you approach the dragon.
+
+Its fiery eyes lock onto you, but you’re already too close to turn back now.
+
+Step by step, you close the distance between yourself and the towering beast, your every movement slow and deliberate. The dragon’s nostrils flare, catching the scent of the offering. And then—you extend the meat.
+
+The dragon pauses.
+
+For a tense moment, it seems as if nothing will happen. But then, its massive jaws snap shut around the meat, devouring it in a single bite.
+
+The air feels different. The tension breaks.
+
+The dragon, no longer eyeing you as an enemy, lets out a low, rumbling growl and turns its gaze toward the distant mountains. As it flies away, you notice a glimmer of gold where it once stood.
+
+With peace restored, you collect the treasure and turn back toward the village, your mission a success.""",
+# 9
+"""The King stares at you in stunned disbelief as you recount the tale. 
+'You... tamed the dragon?' he murmurs, awe filling his voice. 
+'I called upon you to defeat beasts, yet you have shown wisdom beyond any warrior. 
+The kingdom is in your debt—our greatest threat has been quelled, not through force, but through cunning."""
+]
+
+
+
+print(text[0])
+
+print(text[1])
+
+# dit zijn alle variabelen die in de code worden gebruikt
+line_length = 9
+king_position = line_length // 2
+player_position = king_position + line_length
+house_position = (line_length ** 2) - (line_length // 2) - 1
+npc_positions = {19 : "Dragon"}
+map = set_map(player_position, npc_positions)
+print_map(map, line_length)
+can_move = True
+player_inventory = [""]
+house_inventory = ["meat", "brick", "sword"]
+empty_inventory = False
+empty_house = False
+ending_number = 0
+player_gold = 0
+player_health = 10
+start_over = False
+game_loop = True
+first_time_king = True
+dragon_tamer = False
+
+# dit is de grote game loop hier binnen speelt het spel zich af
+while game_loop:
+    while not start_over:
+        while can_move:
+            # dit is de basis keuze: bewegen
+            direction = input("Where do you want to go? (Up, Right, Down, Left)").lower()
+            movement_input = movement(direction, player_position, line_length)
+            if movement_input == "out of bounds":
+                print("Cant go that way!")
+            elif movement_input == "invalid input":
+                print("Invalid input, try again. (North, East, South, West)")
+            else:
+                player_position = movement_input
+            # hier wordt de map met de nieuwe player position geprint
+            print_map(set_map(player_position, npc_positions), line_length)
+            # dit is een check of er een npc op dezelfde tile is als de player
+            if player_position in npc_positions:
+                npc = npc_positions[player_position]
+                print(f"A {npc} has appeared!")
+                in_interaction = True
+                while in_interaction:
+                    npc_decision = input("What would you like to do? (Fight, Talk, Run)").lower()
+                    if npc == "Dragon":
+                        have_sword = False
+                        have_brick = False
+                        have_meat = False
+                        for item in player_inventory:
+                            if item == "sword":
+                                have_sword = True
+                            elif item == "brick":
+                                have_brick = True
+                            elif item == "meat":
+                                have_meat = True
+                        if npc_decision == "fight":
+                            in_interaction = False
+                            if have_sword:
+                                print(text[2])
+                                print("You've earned 10 gold!")
+                                player_gold += 10
+                                del npc_positions[19]
+                            elif have_brick:
+                                print(text[3])
                                 print("You died.")
                                 print("You got the \"Reckless courage\" ending. (What were you thinking?)")
                                 can_move = False
@@ -208,26 +280,7 @@ Before you can react, fire consumes you.""")
                                 else:
                                     exit()
                             else:
-                                print("""With nothing but your fists and a heart full of reckless courage, you charge at the dragon.
-
-As the distance between you closes, you notice the dragon’s eyes lock onto you.
-But it’s too late for him to react. You know you’ll land this hit.
-You know it’s going to work.
-
-With each step, your resolve hardens. You gather all your strength, your fist drawn back, ready to strike.
-And then—you’re there.
-
-You swing with everything you have, driving your punch into the dragon’s side.
-...
-It feels like slamming into a brick wall.
-
-What did you expect? It’s a dragon.
-
-The beast stares down at you, its massive maw opening slowly.
-Sparks flicker to life around its fangs, and in that instant, you realize the truth.
-This was never a fight you could win.
-
-In a flash, flames engulf you..""")
+                                print(text[4])
                                 print("You died.")
                                 print("You got the \"Reckless courage\" ending. (What were you thinking?)")
                                 can_move = False
@@ -236,33 +289,9 @@ In a flash, flames engulf you..""")
                                 else:
                                     exit()
                         elif npc_decision == "talk":
+                            if not have_meat:
                                 in_interaction = False
-                                print("""With nothing but your voice and a desperate hope for peace, you approach the dragon.
-
-Its colossal form towers above you, eyes glowing like embers in the dark. You swallow hard, but you keep walking, your hands raised in a gesture of surrender.
-You have no weapon, only words.
-
-'We don’t have to do this,' you say, your voice trembling but steady.
-The dragon’s gaze shifts to you, a low rumble escaping its throat.
-
-You take a deep breath, trying to sound calm.
-'Maybe we can find another way,' you plead. 'I’m not here to fight.'
-
-For a moment, the dragon does nothing. Its massive head tilts slightly, as if considering your words. Hope flickers in your chest.
-Maybe—just maybe—it understands.
-
-But then, the dragon snorts, a cloud of smoke billowing from its nostrils.
-Its eyes narrow, and a deep, guttural growl reverberates through the air.
-
-You freeze as realization dawns.
-
-It doesn’t care.
-
-Before you can even react, the dragon’s jaws snap open, and you see the telltale flicker of flames within its maw.
-
-Your words were meaningless.
-
-In an instant, a torrent of fire surges toward you, and your last thought is that you never stood a chance.""")   
+                                print(text[5])   
                                 print("You died.")
                                 print("You got the \"Dragon whisperer\" ending. (Did you think that would work?)")
                                 can_move = False
@@ -270,20 +299,54 @@ In an instant, a torrent of fire surges toward you, and your last thought is tha
                                     start_over = True
                                 else:
                                     exit()
+                            elif have_meat:
+                                in_interaction = False
+                                dragon_tamer = True
+                                print(text[8])
+                                print("You've earned 10 gold!")
+                                player_gold += 10
+                                del npc_positions[19]
                         elif npc_decision == "run":
                             in_interaction = False
                             continue
                         else:
                             print("Invalid input.")
+                            continue
 
             if player_position == king_position:
                 if input("Talk to the king? (Yes, No)").lower() == "yes":
-                    print("""Brave adventurer, our kingdom is in peril.
-        Our coffers have been emptied, our people live in fear.
-        The knights who once protected these lands have betrayed us, and the dragons who once slumbered have awoken.
-        The gold they’ve taken must be returned. As much as you can carry, as much as you can find—bring it back to me.
-        For every coin you return, a greater reward awaits.
-        Go now, and may fortune guide your path.""")
+                    if first_time_king:
+                        print(text[6])
+                        first_time_king = False
+                    else:
+                        end_game_input = input("Do you want to turn in your gold? (Yes, No)(This will end the game.)").lower()
+                        if end_game_input == "yes":
+                            if player_gold == 10 and not dragon_tamer:
+                                print(text[7])
+                                print("You got the \"Dragon killer\" ending. (You have slain a dragon!)")
+                                can_move = False
+                                if input("Try again? (Yes, No)").lower() == "yes":
+                                    start_over = True
+                                else:
+                                    exit()
+                            
+                            elif player_gold == 10 and dragon_tamer:
+                                print(text[9])
+                                print("You got the \"How to tame a dragon?\" ending. (Snacks over swords!)")
+                                can_move = False
+                                if input("Try again? (Yes, No)").lower() == "yes":
+                                    start_over = True
+                                else:
+                                    exit()
+
+                            elif player_gold < 10:
+                                print("Did you even do anything?")
+                                print("You got the \"Speedrun?\" ending. (Did you even play the game?)")
+                                can_move = False
+                                if input("Try again? (Yes, No)").lower() == "yes":
+                                    start_over = True
+                                else:
+                                    exit()
             # dit is een check om te kijken of de player bij zijn huis is
             if player_position == house_position:
                 # dit zorgt voor het verwerken van "item storage"
@@ -354,18 +417,7 @@ In an instant, a torrent of fire surges toward you, and your last thought is tha
                     if take_more == "no":
                         house_input = "no"
     else:
-        print("""In the kingdom of Pythoria, an era of peace has been shattered by a wave of treachery.
-A band of ruthless knights, once loyal to the crown, has turned against their king.
-Alongside them are fierce dragons that have been awakened from their ancient slumber.
-Together, they have stolen the kingdom's wealth, plunging the realm into chaos and despair. 
-The King, desperate to restore balance, has called upon you, a brave adventurer, to recover the stolen treasures.
-The more gold you return, the greater your reward will be.
-
-With courage in your heart, you set out on a perilous journey to reclaim the riches taken by the enemy. 
-But beware—both knights and dragons stand in your way, each more dangerous than the last. 
-Only the clever, the bold, and the persistent can hope to succeed.
-        
-(You should visit the king first.)""")
+        print(text[7])
 
         # dit zijn alle variabelen die in de code worden gebruikt
         line_length = 9
@@ -373,12 +425,11 @@ Only the clever, the bold, and the persistent can hope to succeed.
         king_position = line_length // 2
         player_position = king_position + line_length
         house_position = (line_length ** 2) - (line_length // 2) - 1
-        npc_positions = {8 : "Knight",
-                        19 : "Dragon"}
+        npc_positions = {19 : "Dragon"}
         map = set_map(player_position, npc_positions)
         print_map(map, line_length)
         can_move = True
-        player_inventory = ["fish"]
+        player_inventory = [""]
         house_inventory = ["meat", "brick", "sword"]
         empty_inventory = False
         empty_house = False
@@ -386,3 +437,5 @@ Only the clever, the bold, and the persistent can hope to succeed.
         player_gold = 0
         player_health = 10
         start_over = False
+        first_time_king = True
+        dragon_tamer = False
